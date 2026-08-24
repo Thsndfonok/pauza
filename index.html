@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pauza Étterem és Kávézó | High-End 2026</title>
+    <title>Pauza Étterem és Kávézó </title>
     <!-- Prémium Google betűtípusok -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
     
@@ -12,7 +12,7 @@
         :root {
             --bg-base: #0a0807;
             --bg-surface: rgba(255, 255, 255, 0.02);
-            --bg-glass: rgba(15, 12, 10, 0.85);
+            --bg-header: #14110f; /* A képhez igazított mélybarna/fekete */
             --gold-primary: #D4AF37;
             --gold-glow: rgba(212, 175, 55, 0.15);
             --text-main: #F9F6F0;
@@ -43,39 +43,44 @@
         .reveal { opacity: 0; transform: translateY(30px); transition: all 1s var(--easing); }
         .reveal.active { opacity: 1; transform: translateY(0); }
 
-        /* Navigáció */
+        /* === PRÉMIUM FEJLÉC (ASZTALI ÉS MOBIL) === */
         header {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 1200px; padding: 1rem 2rem;
+            width: 90%; max-width: 1100px; padding: 0.8rem 1.5rem 0.8rem 2rem;
             display: flex; justify-content: space-between; align-items: center;
-            background: var(--bg-glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            background: var(--bg-header);
             border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 100px;
-            z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: all 0.4s ease;
+            z-index: 1000; box-shadow: 0 15px 40px rgba(0,0,0,0.5); transition: all 0.4s ease;
         }
 
-        /* Törölt kép logó helyett tipográfiai logó */
         .logo-text { 
-            font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; 
-            color: var(--gold-primary); letter-spacing: 4px; cursor: pointer; 
+            font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; 
+            color: var(--gold-primary); letter-spacing: 3px; cursor: pointer; 
             text-decoration: none; display: inline-block; transition: transform 0.3s ease;
         }
         .logo-text:hover { transform: scale(1.05); }
         
         nav { display: flex; align-items: center; }
-        nav ul { display: flex; list-style: none; gap: 2.5rem; align-items: center; }
-        nav a { color: var(--text-main); text-decoration: none; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: color 0.3s ease; position: relative; }
+        nav ul { display: flex; list-style: none; gap: 2rem; align-items: center; }
+        nav a { color: var(--text-main); text-decoration: none; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: color 0.3s ease; position: relative; }
         nav a::after { content: ''; position: absolute; width: 0; height: 1px; bottom: -4px; left: 0; background-color: var(--gold-primary); transition: width 0.3s ease; }
         nav a:hover::after { width: 100%; }
         nav a:hover { color: var(--gold-primary); }
 
-        .btn-glass { background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold-primary); color: var(--gold-primary) !important; padding: 0.6rem 1.8rem; border-radius: 100px; transition: all 0.4s var(--easing); cursor: pointer; }
-        .btn-glass:hover { background: var(--gold-primary); color: var(--bg-base) !important; box-shadow: 0 0 20px var(--gold-glow); }
+        /* Asztalfoglalás Gomb a Fejlécben */
+        .btn-glass { 
+            background: transparent; border: 1px solid var(--gold-primary); 
+            color: var(--gold-primary) !important; padding: 0.6rem 1.5rem; 
+            border-radius: 100px; transition: all 0.4s var(--easing); cursor: pointer; 
+        }
+        .btn-glass:hover { background: rgba(212, 175, 55, 0.1); box-shadow: 0 0 15px var(--gold-glow); }
         .btn-glass::after { display: none; }
+        .mobile-btn-text { display: none; } /* Alapból rejtve */
 
         .btn-solid {
             background: var(--gold-primary); color: var(--bg-base);
             padding: 1rem 3rem; border: none; border-radius: 100px;
-            font-weight: 500; font-size: 1rem; cursor: pointer;
+            font-weight: 600; font-size: 1rem; cursor: pointer;
             text-transform: uppercase; letter-spacing: 2px;
             transition: all 0.4s var(--easing); width: max-content;
         }
@@ -157,23 +162,18 @@
         .footer-bottom { text-align: center; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
         .creator a { color: var(--gold-primary); text-decoration: none; }
 
-        /* === MOBIL OPTIMALIZÁLÁS (Responsive) === */
-        .mobile-toggle { display: none; background: none; border: none; color: var(--gold-primary); font-size: 2rem; cursor: pointer; }
-        
+        /* === MOBIL OPTIMALIZÁLÁS (A FEJLÉC MEGTARTJA A KAPSZULA FORMÁT!) === */
         @media (max-width: 900px) {
-            /* Header és Mobil Menü */
-            header { width: 100%; top: 0; border-radius: 0; padding: 1rem 5%; background: var(--bg-base); border-bottom: 1px solid rgba(255,255,255,0.1); }
-            .page-view { padding-top: 100px; }
-            .mobile-toggle { display: block; z-index: 1001; }
-            
-            nav {
-                position: fixed; top: 0; left: -100%; width: 100%; height: 100vh;
-                background: var(--bg-base); flex-direction: column; justify-content: center;
-                transition: left 0.4s ease; z-index: 1000;
+            /* Fejléc okos zsugorítása ahelyett, hogy szétesne */
+            header { 
+                width: 96%; top: 10px; padding: 0.6rem 1rem; 
+                gap: 0.5rem; justify-content: space-between;
             }
-            nav.open { left: 0; }
-            nav ul { flex-direction: column; gap: 2.5rem; text-align: center; }
-            nav a { font-size: 1.2rem; }
+            .logo-text { font-size: 1.2rem; letter-spacing: 2px; }
+            nav ul { gap: 0.8rem; }
+            nav a { font-size: 0.65rem; letter-spacing: 1px; }
+            
+            .btn-glass { padding: 0.4rem 0.8rem; font-size: 0.65rem; letter-spacing: 1px; }
             
             /* Gridek mobilon 1 oszloposak */
             .bento-grid, .product-grid, .form-grid { grid-template-columns: 1fr; gap: 1.5rem; }
@@ -191,6 +191,19 @@
             .map-wrapper { height: 300px; }
             .footer-bottom { justify-content: center; }
         }
+
+        /* Extrém kis képernyők (pl. iPhone SE, régi androidok) */
+        @media (max-width: 450px) {
+            header { padding: 0.5rem 0.8rem; }
+            .logo-text { font-size: 1.1rem; letter-spacing: 1px; }
+            nav ul { gap: 0.5rem; }
+            nav a { font-size: 0.55rem; letter-spacing: 0.5px; }
+            .btn-glass { padding: 0.3rem 0.6rem; font-size: 0.55rem; }
+            
+            /* Szövegcsere a gombon, hogy elférjen! */
+            .desktop-btn-text { display: none; }
+            .mobile-btn-text { display: inline; }
+        }
     </style>
 </head>
 <body>
@@ -198,21 +211,24 @@
     <div class="ambient-light light-1"></div>
     <div class="ambient-light light-2"></div>
 
-    <!-- Navigáció -->
+    <!-- Fejléc - Pontosan a kép alapján, mobilon is kapszula formájú! -->
     <header>
         <div onclick="switchView('view-home')">
             <span class="logo-text">PAUZA</span>
         </div>
         
-        <nav id="nav-menu">
+        <nav>
             <ul>
                 <li><a onclick="switchView('view-menu')">Étlap</a></li>
                 <li><a onclick="switchView('view-coffee')">Kávézó</a></li>
-                <li><a onclick="switchView('view-reserve')" class="btn-glass">Asztalfoglalás</a></li>
+                <li>
+                    <a onclick="switchView('view-reserve')" class="btn-glass">
+                        <span class="desktop-btn-text">Asztalfoglalás</span>
+                        <span class="mobile-btn-text">Foglalás</span>
+                    </a>
+                </li>
             </ul>
         </nav>
-        
-        <button class="mobile-toggle" onclick="toggleMenu()">☰</button>
     </header>
 
     <!-- 1. FŐOLDAL -->
@@ -425,21 +441,10 @@
     </footer>
 
     <script>
-        // Mobil menü kapcsoló
-        const navMenu = document.getElementById('nav-menu');
-        function toggleMenu() {
-            navMenu.classList.toggle('open');
-        }
-
         // SPA Navigáció
         function switchView(viewId) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
             
-            // Ha mobilon vagyunk és nyitva a menü, csukjuk be
-            if (navMenu.classList.contains('open')) {
-                navMenu.classList.remove('open');
-            }
-
             document.querySelectorAll('.page-view').forEach(view => view.classList.remove('active'));
             setTimeout(() => {
                 document.getElementById(viewId).classList.add('active');

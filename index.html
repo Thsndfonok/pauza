@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pauza Étterem és Kávézó</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-main: #14110F;
+            --bg-card: #1E1A17;
+            --bg-input: #2A2521;
+            --gold: #C89F5C;
+            --gold-hover: #E3B976;
+            --text-light: #F4EFEA;
+            --text-muted: #A39D98;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+            --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-light);
+            font-family: var(--font-body);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* Navigáció */
+        header {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 1rem 5%;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(20, 17, 15, 0.9);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(200, 159, 92, 0.1);
+        }
+
+        .logo-container img { height: 50px; background-color: white; border-radius: 4px; padding: 4px; cursor: pointer; }
+        nav ul { display: flex; list-style: none; gap: 3rem; align-items: center; }
+        nav a { color: var(--text-light); text-decoration: none; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; transition: var(--transition); cursor: pointer; }
+        nav a:hover { color: var(--gold); }
+        .btn-outline { border: 1px solid var(--gold); padding: 0.6rem 1.8rem; border-radius: 50px; color: var(--gold) !important; cursor: pointer; transition: var(--transition); }
+        .btn-outline:hover { background-color: var(--gold); color: var(--bg-main) !important; }
+        .btn-solid { background: var(--gold); color: var(--bg-main); padding: 1rem 3rem; border: none; border-radius: 50px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: var(--transition); text-transform: uppercase; letter-spacing: 1px; }
+        .btn-solid:hover { background: var(--gold-hover); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(200, 159, 92, 0.2); }
+        
+        .back-btn { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--gold); text-decoration: none; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2rem; cursor: pointer; transition: var(--transition); border: none; background: none; font-family: var(--font-body); }
+        .back-btn:hover { color: var(--text-light); transform: translateX(-5px); }
+
+        /* SPA Nézetek (Nézetváltó logika CSS-e) */
+        .page-view { display: none; padding-top: 100px; min-height: 100vh; }
+        .page-view.active { display: block; animation: fadeIn 0.5s ease-out forwards; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hero */
+        .hero {
+            height: calc(100vh - 100px); display: flex; align-items: center; padding: 0 5%;
+            background: linear-gradient(rgba(20, 17, 15, 0.7), rgba(20, 17, 15, 0.95)), url('https://images.unsplash.com/photo-1550461716-dbf266b2a8a7?auto=format&fit=crop&q=80') center/cover;
+            border-radius: 0 0 40px 40px; margin-bottom: 4rem;
+        }
+        .hero-content { max-width: 800px; }
+        .hero-title { font-family: var(--font-heading); font-size: clamp(3rem, 6vw, 5.5rem); line-height: 1.1; margin-bottom: 1.5rem; }
+        .hero-title span { color: var(--gold); font-style: italic; }
+        .hero-subtitle { font-size: 1.1rem; color: var(--text-muted); max-width: 500px; margin-bottom: 3rem; }
+
+        /* Bento Grid (Főoldal) */
+        .bento-section { padding: 2rem 5% 6rem; }
+        .bento-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .bento-card { background-color: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.03); border-radius: 24px; padding: 3rem; transition: var(--transition); position: relative; overflow: hidden; cursor: pointer; }
+        .bento-card:hover { transform: translateY(-5px); border-color: rgba(200, 159, 92, 0.3); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .bento-card h3 { font-family: var(--font-heading); font-size: 2rem; margin-bottom: 1rem; color: var(--gold); }
+        .card-large { grid-column: span 2; background: linear-gradient(rgba(30, 26, 23, 0.8), rgba(30, 26, 23, 0.9)), url('https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&q=80') center/cover; }
+        .card-coffee { grid-column: span 3; background: linear-gradient(rgba(30, 26, 23, 0.7), rgba(30, 26, 23, 0.9)), url('https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&q=80') center/cover; display: flex; align-items: center; justify-content: space-between; }
+
+        /* Térkép Szekció */
+        .map-section { padding: 0 5% 6rem; }
+        .map-container { width: 100%; height: 450px; border-radius: 24px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .map-container iframe { width: 100%; height: 100%; border: 0; filter: contrast(1.1) opacity(0.9); transition: var(--transition); }
+        .map-container:hover iframe { filter: contrast(1.2) opacity(1); }
+
+        /* Kávé Menü Nézet */
+        .menu-container { max-width: 800px; margin: 0 auto; padding-bottom: 6rem; }
+        .menu-item { display: flex; flex-direction: column; padding: 1.5rem; margin-bottom: 1rem; background: var(--bg-card); border-radius: 12px; border: 1px solid transparent; transition: var(--transition); }
+        .menu-item:hover { border-color: rgba(200, 159, 92, 0.3); transform: translateX(10px); }
+        .menu-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 0.5rem; margin-bottom: 0.5rem; }
+        .menu-name { font-family: var(--font-heading); font-size: 1.5rem; color: var(--text-light); }
+        .menu-price { color: var(--gold); font-size: 1.2rem; font-weight: 500; }
+        .menu-desc { color: var(--text-muted); font-size: 0.9rem; }
+
+        /* Foglalás Nézet */
+        .reservation-wrapper { max-width: 1000px; margin: 0 auto 6rem; background: var(--bg-card); border-radius: 24px; padding: 4rem; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+        .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .input-group label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .input-group input, .input-group select, .input-group textarea { background: var(--bg-input); border: 1px solid rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; color: var(--text-light); font-family: var(--font-body); font-size: 1rem; transition: var(--transition); }
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 2px rgba(200, 159, 92, 0.2); }
+        .full-width { grid-column: span 2; }
+        
+        #success-message { display: none; text-align: center; padding: 3rem; }
+        #success-message h3 { font-family: var(--font-heading); color: var(--gold); font-size: 2.5rem; margin-bottom: 1rem; }
+
+        /* Footer */
+        .contact-footer { background-color: var(--bg-card); padding: 5rem 5% 2rem; border-top: 1px solid rgba(200, 159, 92, 0.2); }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; margin-bottom: 4rem; }
+        .footer-block h4 { color: var(--gold); font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 1.5rem; }
+        .footer-block p, .footer-block a { color: var(--text-muted); text-decoration: none; display: block; margin-bottom: 0.8rem; transition: var(--transition); }
+        .footer-block a:hover { color: var(--text-light); }
+        .bottom-bar { text-align: center; padding-top: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.05); color: var(--text-muted); font-size: 0.85rem; }
+        .creator-link { color: var(--gold); text-decoration: none; transition: var(--transition); }
+        .creator-link:hover { color: var(--text-light); }
+
+        @media (max-width: 960px) {
+            .bento-grid { grid-template-columns: 1fr; }
+            .card-large, .card-coffee { grid-column: span 1; }
+            .form-grid { grid-template-columns: 1fr; }
+            .full-width { grid-column: span 1; }
+            nav ul { display: none; }
+            .reservation-wrapper { padding: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigáció -->
+    <header>
+        <div class="logo-container" onclick="switchView('view-home')">
+            <img src="291798411_563532638609620_4650225927586215155_n.jpg" alt="Pauza Étterem">
+        </div>
+        <nav>
+            <ul>
+                <li><a onclick="switchView('view-coffee')">Kávézó Kínálat</a></li>
+                <li><a onclick="switchView('view-reservation')" class="btn-outline">Asztalfoglalás</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- FŐOLDAL NÉZET -->
+    <div id="view-home" class="page-view active" style="padding-top: 80px;">
+        <!-- Hero -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">Idő és íz <span>harmóniája.</span></h1>
+                <p class="hero-subtitle">Lassulj le nálunk. A Pauza egy modern menedék, ahol a prémium gasztronómia és az újhullámos kávékultúra találkozik.</p>
+                <button onclick="switchView('view-reservation')" class="btn-solid">Asztal foglalása</button>
+            </div>
+        </section>
+
+        <!-- Bento Navigation Cards -->
+        <section class="bento-section">
+            <div class="bento-grid">
+                <div class="bento-card card-large" onclick="switchView('view-reservation')">
+                    <h3>Étterem & Foglalás</h3>
+                    <p style="max-width: 300px;">Gondosan válogatott alapanyagok, modern konyhatechnológia. Biztosítsd asztalod pár kattintással.</p>
+                    <span style="color: var(--gold); display: block; margin-top: 2rem; font-weight: 500;">Tovább a foglaláshoz &rarr;</span>
+                </div>
+                <div class="bento-card">
+                    <h3>Rólunk</h3>
+                    <p>Ismerje meg a Pauza történetét és a Fórum-Food 2016 Kft. minőség iránti elkötelezettségét.</p>
+                </div>
+                <div class="bento-card card-coffee" onclick="switchView('view-coffee')">
+                    <div>
+                        <h3 style="font-size: 2.5rem;">Kávézó Lap</h3>
+                        <p style="max-width: 400px;">Specialty kávék, frissen pörkölve. Fedezze fel itallapunkat.</p>
+                        <span style="color: var(--gold); display: block; margin-top: 1rem; font-weight: 500;">Kínálat megtekintése &rarr;</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Google Térkép Szekció -->
+        <section class="map-section">
+            <h2 style="font-family: var(--font-heading); font-size: 2.5rem; color: var(--gold); margin-bottom: 2rem; text-align: center;">Itt talál minket</h2>
+            <div class="map-container">
+                <!-- Google Maps iFrame a Bécsi út 271-hez -->
+                <iframe src="https://maps.google.com/maps?q=1037%20Budapest,%20B%C3%A9csi%20%C3%BAt%20271&t=&z=15&ie=UTF8&iwloc=&output=embed" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </section>
+    </div>
+
+    <!-- KÁVÉ MENÜ NÉZET -->
+    <div id="view-coffee" class="page-view">
+        <div class="menu-container">
+            <button class="back-btn" onclick="switchView('view-home')">&larr; Vissza a főoldalra</button>
+            <h2 style="font-family: var(--font-heading); font-size: 3rem; color: var(--gold); margin-bottom: 3rem; text-align: center;">Specialty Kávéink</h2>
+            
+            <div class="menu-item">
+                <div class="menu-header">
+                    <span class="menu-name">Pauza Signature Espresso</span>
+                    <span class="menu-price">950 Ft</span>
+                </div>
+                <div class="menu-desc">Világos pörkölésű, etióp single origin kávé virágos és citrusos jegyekkel.</div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-header">
+                    <span class="menu-name">Flat White</span>
+                    <span class="menu-price">1 450 Ft</span>
+                </div>
+                <div class="menu-desc">Dupla ristretto alap, tökéletes textúrájú, selymes tejhabbal felöntve.</div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-header">
+                    <span class="menu-name">Gold Leaf Cortado</span>
+                    <span class="menu-price">1 290 Ft</span>
+                </div>
+                <div class="menu-desc">Espresso egyenlő arányú meleg tejjel, egy csipetnyi eleganciával.</div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-header">
+                    <span class="menu-name">Tonka Bean Latte</span>
+                    <span class="menu-price">1 750 Ft</span>
+                </div>
+                <div class="menu-desc">Krémes latte házi tonkabab sziruppal és frissen őrölt szerecsendióval.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ASZTALFOGLALÁS NÉZET -->
+    <div id="view-reservation" class="page-view">
+        <div class="reservation-wrapper">
+            <button class="back-btn" onclick="switchView('view-home')">&larr; Vissza a főoldalra</button>
+            <h2 style="font-family: var(--font-heading); font-size: 3rem; color: var(--gold); margin-bottom: 1rem; text-align: center;">Asztalfoglalás</h2>
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 3rem;">Kérjük, adja meg adatait, és kollégánk hamarosan visszaigazolja foglalását.</p>
+            
+            <form id="booking-form">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="name">Teljes Név</label>
+                        <input type="text" id="name" required placeholder="Pl.: Kovács Péter">
+                    </div>
+                    <div class="input-group">
+                        <label for="phone">Telefonszám</label>
+                        <input type="tel" id="phone" required placeholder="+36 30 123 4567">
+                    </div>
+                    <div class="input-group">
+                        <label for="date">Dátum</label>
+                        <input type="date" id="date" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="time">Érkezés ideje</label>
+                        <input type="time" id="time" required>
+                    </div>
+                    <div class="input-group full-width">
+                        <label for="guests">Személyek száma</label>
+                        <select id="guests" required>
+                            <option value="1">1 személy</option>
+                            <option value="2" selected>2 személy</option>
+                            <option value="3">3 személy</option>
+                            <option value="4">4 személy</option>
+                            <option value="5">5+ személy</option>
+                        </select>
+                    </div>
+                    <div class="input-group full-width">
+                        <label for="notes">Megjegyzés / Különleges kérés (Opcionális)</label>
+                        <textarea id="notes" rows="3" placeholder="Pl.: Ablak melletti asztalt szeretnénk..."></textarea>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button type="submit" class="btn-solid">Foglalás elküldése</button>
+                </div>
+            </form>
+
+            <div id="success-message">
+                <h3>Köszönjük foglalását!</h3>
+                <p style="color: var(--text-muted);">Adatait sikeresen rögzítettük. Hamarosan felvesszük Önnel a kapcsolatot.</p>
+                <button onclick="resetForm()" class="btn-outline" style="margin-top: 2rem; background: transparent;">Új foglalás</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Közös Footer -->
+    <footer class="contact-footer">
+        <div class="footer-grid">
+            <div class="footer-block">
+                <h4>Pauza Étterem</h4>
+                <p>1037 Budapest,<br>Bécsi út 271.</p>
+            </div>
+            <div class="footer-block">
+                <h4>Kapcsolat</h4>
+                <p><strong>Faragó Adrienn</strong></p>
+                <a href="tel:+36301357534">+36 30 135 75 34</a>
+                <a href="mailto:forumfood.kft@gmail.com">forumfood.kft@gmail.com</a>
+            </div>
+            <div class="footer-block">
+                <h4>Cégadatok</h4>
+                <p>Fórum-Food 2016 Kft.</p>
+                <p>Székhely: 1037 Budapest, Bécsi út 271.</p>
+            </div>
+        </div>
+        <div class="bottom-bar">
+            <p>&copy; 2026 Fórum-Food 2016 Kft. | Pauza Étterem és Kávézó.</p>
+            <p style="margin-top: 8px;">Készítette: <a href="https://profiweboldal.com" target="_blank" class="creator-link">profiweboldal.com</a></p>
+        </div>
+    </footer>
+
+    <!-- Nézetváltó (SPA) és Űrlap JavaScript -->
+    <script>
+        function switchView(viewId) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            const views = document.querySelectorAll('.page-view');
+            views.forEach(view => {
+                view.classList.remove('active');
+            });
+
+            setTimeout(() => {
+                document.getElementById(viewId).classList.add('active');
+            }, 50);
+        }
+
+        const form = document.getElementById('booking-form');
+        const successMsg = document.getElementById('success-message');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = form.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+            btn.innerText = 'Küldés folyamatban...';
+            btn.style.opacity = '0.7';
+
+            setTimeout(() => {
+                form.style.display = 'none';
+                successMsg.style.display = 'block';
+                btn.innerText = originalText;
+                btn.style.opacity = '1';
+            }, 1200);
+        });
+
+        function resetForm() {
+            form.reset();
+            successMsg.style.display = 'none';
+            form.style.display = 'block';
+        }
+
+        const dateInput = document.getElementById('date');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.min = today;
+    </script>
+</body>
+</html>
